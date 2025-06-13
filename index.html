@@ -188,8 +188,8 @@ function calcularImpostos(event) {
       <tr><td><strong>Base IS</strong> (Valor Líquido do produto + frete + Seguro + Despesas - Desconto)</td><td class="alinhado-direita">${formatBR(baseIS)}</td></tr>
       <tr><td>IS</td><td class="alinhado-direita">${formatBR(valorIS)}</td></tr>
       <tr><td><strong>Base IBS/CBS</strong> (Valor Líquido do produto + frete + Seguro + Despesas - Desconto + IS)</td><td class="alinhado-direita">${formatBR(baseIBSCBS)}</td></tr>
-      <tr><td>IBS (não somara ao total da nota caso compra com as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBS)}</td></tr>
-      <tr><td>CBS (não somara ao total da nota caso compra com as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorCBS)}</td></tr>
+      <tr><td>IBS (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBS)}</td></tr>
+      <tr><td>CBS (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorCBS)}</td></tr>
       <tr><th>TOTAL DA NOTA COM IBS/CBS/IS (Para empresa que não cumpra com as obrigações acessórias)</th><th class="alinhado-direita">${formatBR(totalFinal)}</th></tr>
     </table>
   `;
@@ -233,7 +233,7 @@ function calcularImpostos(event) {
 
   <footer class="footer">
 
-    <a href="https://forms.gle/FgHaFehB74mNmxH98" target="_blank">Clique para avaliar este conteúdo</a><p>
+    <a href="https://forms.gle/FgHaFehB74mNmxH98" target="_blank">De seu feedback, avalie este conteúdo</a><p>
 
 
     Simulador desenvolvido com base na Lei Complementar nº 214, de 16/01/2025 e legislação anterior.<br>
