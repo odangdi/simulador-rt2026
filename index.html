@@ -90,7 +90,7 @@ background-color: #fff;
     width: 100%;
     box-sizing: border-box;
     }
-    .footer a { color: #4CAF50; text-decoration: none; }
+    .footer a { color: #033f9e; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -147,13 +147,14 @@ background-color: #fff;
 
 
 <P><h3><h4>CÁLCULO REVERSO</h3>
-<h4>(Total da Nota Fiscal sem IBS/ CBS/ IS para → Valor Líquido do Produto)</h4><P>
+<p style="font-size: 11px; text-align: center;">
+(Total da Nota Fiscal sem IBS/ CBS/ IS para → Valor Líquido do Produto)<P>
 
 <div class="form-container">
   <label for="valorFinal">Informe o Valor Total da Nota Fiscal sem IBS/CBS/IS:
     <input type="number" id="valorFinal" value="" step="0.01" placeholder="Ex: 14748,37" class="numero-formatado">
   </label>
-  <button onclick="calcularReverso(event)">Calcular Valor Líquido</button>
+  <button onclick="calcularReverso(event)">Calcular Valor Líquido do Produto</button>
 </div>
 <div class="resultado" id="resultadoReverso"></div>
 
@@ -290,15 +291,18 @@ function calcularReverso(event) {
 
   <footer class="footer">
 
-    <a href="https://forms.gle/FgHaFehB74mNmxH98" target="_blank">De seu feedback, avalie este conteúdo</a><p>
-    <h3><strong>e-books de estudos Fiscais na Amazon:</strong></h3><p>
-    <a href="https://www.amazon.com.br/dp/B0FB4BDH8V" target="_blank">■ CRÉDITOS DE IBS e CBS: uso e consumo pessoal</a><p>
-    <a href="https://www.amazon.com.br/dp/B0DHGB27K2" target="_blank">■ EXCLUSÃO ICMS DA BASE PIS E COFINS: formação do preço de venda</a><p>
+    <a href="https://forms.gle/FgHaFehB74mNmxH98" target="_blank">De seu feedback, avalie este conteúdo &#10004</a><p>
+    <h3><strong>e-book's &#128217 de estudos Fiscais na Amazon:</strong></h3>
+    <a href="https://www.amazon.com.br/dp/B0FB4BDH8V" target="_blank">■ CRÉDITOS DE IBS e CBS: uso e consumo pessoal</a><br>
+    <a href="https://www.amazon.com.br/dp/B0DHGB27K2" target="_blank">■ EXCLUSÃO ICMS DA BASE PIS E COFINS: formação do preço de venda</a><br>
+ </footer>
 
+
+<footer class="footer">
 
     Simulador desenvolvido com base na Lei Complementar nº 214, de 16/01/2025 e legislação anterior.<br>
     &copy; 2025 Diego D'angelo. Licenciado sob 
-    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.<br><br>
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a><br>
     Me siga no LinkedIn – 
     <a href="https://www.linkedin.com/in/diegodangelo-di-ryco/" target="_blank">Diego Dangelo</a>
     <a href="https://www.linkedin.com/in/diegodangelo-di-ryco/" target="_blank" style="text-decoration: none;">
