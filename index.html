@@ -29,7 +29,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    input[type="number and text"] {
+    input[type="number"] {
       padding: 5px;
       width: 100%;
       max-width: 150px;
@@ -37,12 +37,13 @@
       border: 1px solid #ccc;
       cursor: pointer;
       font-size: 11px;
+background-color: #fff;
       text-align: right;
       margin-left: 10px;
       box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
-    input[type="text"]:focus { border-color: #4CAF50; outline: none; }
+    input[type="number"]:focus { border-color: #4CAF50; outline: none; }
     button {
       padding: 8px 20px;
       width: 100%;
@@ -82,21 +83,35 @@
       text-align: center;
       font-size: 11px;
     }
+    th:first-child, td:first-child {
+    text-align: left;
+    }
+    input, button {
+    width: 100%;
+    box-sizing: border-box;
+    }
     .footer a { color: #4CAF50; text-decoration: none; }
   </style>
 </head>
 <body>
 
   <h2>Simulador de Impostos Reforma Tributária - 2026</h2>
-  <h4>Empresas Lucro Real, Formação do Preço de Venda</h4>
 
-  <h5>-Exemplo de calculo em uma venda para <em>Industrialização-</em></h5>
-  <h6>Informe o valor e percentual dos impostos, depois clique em calcular:</h6></p>
+<p style="font-size: 11px; text-align: center;">
+  Esta ferramenta simula o calculo de impostos em uma empresa Lucro Real, em um cenerio de venda para <em>Industrialização</em> com base nos tributos aplicáveis a partir da Reforma Tributária de 2026.
+
+</p>
+
+
+
+  <h5>Informe o valor e percentuais dos impostos, depois clique em calcular:</h5>
 
   <div class="form-container">
   <label for="valorLiquido"><strong>Valor Líquido do Produto</strong> (não foi considerado Desp. Acess., Frete, Seguro, Descontos):
-    <input type="text" id="valorLiquido" value="10.000,00" step="0,01">
-  </label>
+    <input type="number" id="valorLiquido" value="10000,00" step="0.01" placeholder="Ex: 10000,00" class="numero-formatado">
+ 
+
+ </label>
   <label for="icms">ICMS (%): 
     <input type="number" id="icms" value="18" step="0.01">
   </label>
@@ -109,8 +124,11 @@
   <label for="cofins">COFINS (%): 
     <input type="number" id="cofins" value="7.6" step="0.01">
   </label>
-  <label for="ibs">IBS (%): 
-    <input type="number" id="ibs" value="0.1" step="0.01">
+  <label for="ibse">IBS ESTADUAL (%): 
+    <input type="number" id="ibse" value="0.1" step="0.01">
+  </label>
+  <label for="ibsm">IBS MUNICIAL (%): 
+    <input type="number" id="ibsm" value="0.0" step="0.01">
   </label>
   <label for="cbs">CBS (%): 
     <input type="number" id="cbs" value="0.9" step="0.01">
@@ -126,62 +144,71 @@
 
 <div class="resultado" id="resultado"></div>
 
-<P><h4>CÁLCULO REVERSO (de Total da Nota sem IBS/CBS/IS para → Valor Líquido)</h4><P>
+
+
+<P><h3><h4>CÁLCULO REVERSO</h3>
+<h4>(Total da Nota Fiscal sem IBS/ CBS/ IS para → Valor Líquido do Produto)</h4><P>
 
 <div class="form-container">
-  <label for="valorFinal">Informe o Valor Total da Nota sem IBS/CBS/IS:
-    <input type="text" id="valorFinal" value="0,00" step="0,01">
+  <label for="valorFinal">Informe o Valor Total da Nota Fiscal sem IBS/CBS/IS:
+    <input type="number" id="valorFinal" value="" step="0.01" placeholder="Ex: 14748,37" class="numero-formatado">
   </label>
   <button onclick="calcularReverso(event)">Calcular Valor Líquido</button>
 </div>
 <div class="resultado" id="resultadoReverso"></div>
 
+
+
 <script>
+
+  function verificarNumeroInteiroSemVirgula(campoId, nomeCampo) {
+    const campo = document.getElementById(campoId);
+    campo.addEventListener('blur', function () {
+      const valor = campo.value.trim();
+      const regexInteiroSemVirgula = /^\d+$/;
+
+      if (regexInteiroSemVirgula.test(valor)) {
+        alert(`Atenção: no campo "${nomeCampo}", use sempre vírgula para decimais.\nExemplo: em vez de ${valor}, digite ${valor},00`);
+      }
+    });
+  }
+
+  // Aplicar nos dois campos solicitados
+  verificarNumeroInteiroSemVirgula('valorLiquido', 'Valor Líquido');
+  verificarNumeroInteiroSemVirgula('valorFinal', 'Valor Final');
+
+
   // Formata número para moeda brasileira
   function formatBR(valor) {
     return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  // Converte string "10.000,00" para número 10000.00
-  function parseBR(valorStr) {
-    if (!valorStr) return 0;
-    return parseFloat(valorStr.replace(/\./g, '').replace(',', '.')) || 0;
-  }
-
-  // Evento para formatar o input valorLiquido ao perder foco
-  const inputValorLiquido = document.getElementById('valorLiquido');
-  inputValorLiquido.addEventListener('blur', (e) => {
-    const num = parseBR(e.target.value);
-    e.target.value = formatBR(num);
-  });
-
-  // Evento para formatar o input valorFinal ao perder foco
-  const inputValorFinal = document.getElementById('valorFinal');
-  inputValorFinal.addEventListener('blur', (e) => {
-    const num = parseBR(e.target.value);
-    e.target.value = formatBR(num);
-  });
-
-  // Inicializa o input já formatado ao carregar a página
-  window.addEventListener('load', () => {
-    const num = parseBR(inputValorLiquido.value);
-    inputValorLiquido.value = formatBR(num);
-  });
+  // Converte string "10000.00" para número 10000,00
+function parseBR(valor) {
+  if (!valor) return 0;
+  return parseFloat(valor.replace(/\./g, '').replace('.', ','));
+}
 
   function calcularImpostos(event) {
     if (event) event.preventDefault();
 
-    const valorLiquido = parseBR(document.getElementById('valorLiquido').value);
+    const valorLiquido = parseBR(document.getElementById('valorLiquido').value)/100;
     if (isNaN(valorLiquido) || valorLiquido <= 0) {
       alert("Informe um valor líquido válido.");
       return;
     }
 
+
+
+
+
+
     const icms = parseFloat(document.getElementById('icms').value.replace(',', '.')) / 100;
     const ipi = parseFloat(document.getElementById('ipi').value.replace(',', '.')) / 100;
     const pis = parseFloat(document.getElementById('pis').value.replace(',', '.')) / 100;
     const cofins = parseFloat(document.getElementById('cofins').value.replace(',', '.')) / 100;
-    const ibs = parseFloat(document.getElementById('ibs').value.replace(',', '.')) / 100;
+    const ibse = parseFloat(document.getElementById('ibse').value.replace(',', '.')) / 100;
+    const ibsm = parseFloat(document.getElementById('ibsm').value.replace(',', '.')) / 100;
     const cbs = parseFloat(document.getElementById('cbs').value.replace(',', '.')) / 100;
     const is = parseFloat(document.getElementById('is').value.replace(',', '.')) / 100;
 
@@ -198,64 +225,71 @@
     const valorIS = baseIS * is;
 
     const baseIBSCBS = baseIS + valorIS;
-    const valorIBS = baseIBSCBS * ibs;
+    const valorIBSe = baseIBSCBS * ibse;
+    const valorIBSm = baseIBSCBS * ibsm;
     const valorCBS = baseIBSCBS * cbs;
 
-    const totalFinal = totalNota + valorIBS + valorCBS + valorIS;
+    const totalFinal = totalNota + valorIBSe + valorIBSm + valorCBS + valorIS;
 
     document.getElementById('resultado').innerHTML = `
       <strong>Resultado da operação com alíquotas de testes em 2026 (vendas simples para industrialização):</strong>
       <table>
-        <tr><th>Item</th><th>Valor (R$)</th></tr>
-        <tr><td>Valor Bruto</td><td class="alinhado-direita">${formatBR(valorBruto)}</td></tr>
+        <tr><th>ITENS:</th><th>Valor (R$)</th></tr>
+        <tr><td>Valor do Produto</td><td class="alinhado-direita">${formatBR(valorBruto)}</td></tr>
         <tr><td>ICMS</td><td class="alinhado-direita">${formatBR(valorICMS)}</td></tr>
         <tr><td>PIS</td><td class="alinhado-direita">${formatBR(valorPIS)}</td></tr>
         <tr><td>COFINS</td><td class="alinhado-direita">${formatBR(valorCOFINS)}</td></tr>
         <tr><td>IPI</td><td class="alinhado-direita">${formatBR(valorIPI)}</td></tr>
-        <tr><th>TOTAL DA NOTA SEM IBS/CBS/IS</th><th class="alinhado-direita"><strong>${formatBR(totalNota)}</strong></th></tr>
-        <tr><td><strong>Base IS</strong> (Valor Líquido do produto + frete + Seguro + Despesas - Desconto)</td><td class="alinhado-direita">${formatBR(baseIS)}</td></tr>
-        <tr><td>IS</td><td class="alinhado-direita">${formatBR(valorIS)}</td></tr>
-        <tr><td><strong>Base IBS/CBS</strong> (Valor Líquido do produto + frete + Seguro + Despesas - Desconto + IS)</td><td class="alinhado-direita">${formatBR(baseIBSCBS)}</td></tr>
-        <tr><td>IBS (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBS)}</td></tr>
+        <tr><th>TOTAL DA NOTA FISCAL (SEM IBS/ CBS/ IS)</th><th class="alinhado-direita"><strong>${formatBR(totalNota)}</strong></th></tr>
+        <tr><td></td><td></td></tr>
+        <tr><th>NOVOS IMPOSTOS:</th><th>Valor (R$)</th></tr>
+        <tr><th>BASE IS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto)</th><th class="alinhado-direita">${formatBR(baseIS)}</th></th>
+        <tr><td>IS (sobre bens/ serviços prejudiciais à saúde ou meio ambiente</td><td class="alinhado-direita">${formatBR(valorIS)}</td></tr>
+        <tr><th>BASE IBS/ CBS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto + IS)</th><th class="alinhado-direita">${formatBR(baseIBSCBS)}</th></th>
+        <tr><td>IBS ESTADUAL (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBSe)}</td></tr>
+        <tr><td>IBS MUNICIPAL (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBSm)}</td></tr>
         <tr><td>CBS (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorCBS)}</td></tr>
         <tr><th>TOTAL DA NOTA COM IBS/CBS/IS (Para empresa que não cumpra com as obrigações acessórias)</th><th class="alinhado-direita">${formatBR(totalFinal)}</th></tr>
       </table>
     `;
   }
 
-  function calcularReverso(event) {
-    if (event) event.preventDefault();
+function calcularReverso(event) {
+  if (event) event.preventDefault();
 
-    const valorFinal = parseBR(document.getElementById('valorFinal').value);
-    if (isNaN(valorFinal) || valorFinal <= 0) {
-      alert("Informe um valor final válido.");
-      return;
-    }
-
-    const icms = parseFloat(document.getElementById('icms').value.replace(',', '.'))/ 100;
-    const ipi = parseFloat(document.getElementById('ipi').value.replace(',', '.')) / 100;
-    const pis = parseFloat(document.getElementById('pis').value.replace(',', '.')) / 100;
-    const cofins = parseFloat(document.getElementById('cofins').value.replace(',', '.')) / 100;
-
-    const valorBruto = valorFinal / (1 + ipi);
-    const valorICMS = valorBruto * icms;
-    const basePISCOFINS = valorBruto - valorICMS;
-    const valorPIS = basePISCOFINS * pis;
-    const valorCOFINS = basePISCOFINS * cofins;
-    const fator = 1 - (icms + (pis * (1 - icms)) + (cofins * (1 - icms)));
-    const valorLiquido = valorBruto * fator;
-
-    document.getElementById('resultadoReverso').innerHTML = `
-      <strong>Valor Líquido a partir do valor sem IBS/CBS/IS:</strong><br><p>
-      Valor Total da NF com IPI: R$ ${formatBR(valorFinal)}<br>
-      Valor do Produto (sem IPI): R$ ${formatBR(valorBruto)}<br>
-      ICMS sobre o VL do Produto (sem IPI): R$ ${formatBR(valorICMS)}<br>
-      PIS sobre o VL do produto (c/ ICMS excluido): R$ ${formatBR(valorPIS)}<br>
-      COFINS sobre o VL do produto (c/ ICMS excluido): R$ ${formatBR(valorCOFINS)}<br>
-      Valor Líquido do Produto: <strong>R$ ${formatBR(valorLiquido)}</strong>
-    `;
+  const valorFinal = parseBR(document.getElementById('valorFinal').value)/100;
+  if (isNaN(valorFinal) || valorFinal <= 0) {
+    alert("Informe um valor final válido.");
+    return;
   }
+
+  const icms = parseFloat(document.getElementById('icms').value.replace(',', '.'))/ 100;
+  const ipi = parseFloat(document.getElementById('ipi').value.replace(',', '.')) / 100;
+  const pis = parseFloat(document.getElementById('pis').value.replace(',', '.')) / 100;
+  const cofins = parseFloat(document.getElementById('cofins').value.replace(',', '.')) / 100;
+
+  const valorBruto = valorFinal / (1 + ipi);
+  const valorICMS = valorBruto * icms;
+  const basePISCOFINS = valorBruto - valorICMS;
+  const valorPIS = basePISCOFINS * pis;
+  const valorCOFINS = basePISCOFINS * cofins;
+  const fator = 1 - (icms + (pis * (1 - icms)) + (cofins * (1 - icms)));
+  const valorLiquido = valorBruto * fator;
+
+  document.getElementById('resultadoReverso').innerHTML = `
+    <strong>Valor Líquido do Produto, a partir do Valor Total da Nota sem IBS/CBS/IS:</strong><br><p>
+    Valor Total da NF com IPI: R$ ${formatBR(valorFinal)}<br>
+    Valor do Produto: R$ ${formatBR(valorBruto)}<br>
+    ICMS sobre o VL do Produto: R$ ${formatBR(valorICMS)}<br>
+    PIS sobre o VL do produto (c/ ICMS excluído): R$ ${formatBR(valorPIS)}<br>
+    COFINS sobre o VL do produto (c/ ICMS excluído): R$ ${formatBR(valorCOFINS)}<br>
+    Valor Líquido do Produto: <strong>R$ ${formatBR(valorLiquido)}</strong>
+  `;
+}
+
 </script>
+
+
 
 
   <footer class="footer">
@@ -265,7 +299,7 @@
 
     Simulador desenvolvido com base na Lei Complementar nº 214, de 16/01/2025 e legislação anterior.<br>
     &copy; 2025 Diego D'angelo. Licenciado sob 
-    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Atribuição 4.0 Internacional</a>.<br><br>
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.<br><br>
     Me siga no LinkedIn – 
     <a href="https://www.linkedin.com/in/diegodangelo-di-ryco/" target="_blank">Diego Dangelo</a>
     <a href="https://www.linkedin.com/in/diegodangelo-di-ryco/" target="_blank" style="text-decoration: none;">
