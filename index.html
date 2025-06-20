@@ -187,7 +187,7 @@ background-color: #fff;
   // Converte string "10000.00" para número 10000,00
 function parseBR(valor) {
   if (!valor) return 0;
-  return parseFloat(valor.replace(/\./g, '').replace('.', ','));
+  return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
 }
 
   function calcularImpostos(event) {
@@ -228,27 +228,75 @@ function parseBR(valor) {
 
     const totalFinal = totalNota + valorIBSe + valorIBSm + valorCBS + valorIS;
 
-    document.getElementById('resultado').innerHTML = `
-      <strong>Resultado da operação com alíquotas de testes em 2026 (vendas simples para industrialização):</strong>
-      <table>
-        <tr><th>ITENS:</th><th>Valor (R$)</th></tr>
-        <tr><td>Valor do Produto</td><td class="alinhado-direita">${formatBR(valorBruto)}</td></tr>
-        <tr><td>ICMS</td><td class="alinhado-direita">${formatBR(valorICMS)}</td></tr>
-        <tr><td>PIS</td><td class="alinhado-direita">${formatBR(valorPIS)}</td></tr>
-        <tr><td>COFINS</td><td class="alinhado-direita">${formatBR(valorCOFINS)}</td></tr>
-        <tr><td>IPI</td><td class="alinhado-direita">${formatBR(valorIPI)}</td></tr>
-        <tr><th>TOTAL DA NOTA FISCAL (SEM IBS/ CBS/ IS)</th><th class="alinhado-direita"><strong>${formatBR(totalNota)}</strong></th></tr>
-        <tr><td></td><td></td></tr>
-        <tr><th>NOVOS IMPOSTOS:</th><th>Valor (R$)</th></tr>
-        <tr><th>BASE IS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto)</th><th class="alinhado-direita">${formatBR(baseIS)}</th></th>
-        <tr><td>IS (sobre bens/ serviços prejudiciais à saúde ou meio ambiente</td><td class="alinhado-direita">${formatBR(valorIS)}</td></tr>
-        <tr><th>BASE IBS/ CBS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto + IS)</th><th class="alinhado-direita">${formatBR(baseIBSCBS)}</th></th>
-        <tr><td>IBS ESTADUAL (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBSe)}</td></tr>
-        <tr><td>IBS MUNICIPAL (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorIBSm)}</td></tr>
-        <tr><td>CBS (Não será somado ao total da nota, caso cumpra as obrigações acessórias)</td><td class="alinhado-direita">${formatBR(valorCBS)}</td></tr>
-        <tr><th>TOTAL DA NOTA COM IBS/CBS/IS (Para empresa que não cumpra com as obrigações acessórias)</th><th class="alinhado-direita">${formatBR(totalFinal)}</th></tr>
-      </table>
-    `;
+ document.getElementById('resultado').innerHTML = `
+  <strong>Resultado da operação com alíquotas de testes em 2026 (vendas simples para industrialização):</strong>
+ 
+ <table>
+<table border="1" style="border-collapse: collapse; text-align: center;">
+  <tr style="background-color: lightgray;">
+    <th colspan="6">CÁLCULO DO IMPOSTO</th>
+  </tr>
+  <tr>
+    <th>Base de Cálculo do ICMS</th>
+    <th>Valor do ICMS</th>
+    <th>Base de Cálculo do ICMS ST</th>
+    <th>Valor do ICMS ST</th>
+    <th>PIS</th>
+    <th>Valor Total dos Produtos</th>
+    </tr>
+  <tr>
+    <td>${formatBR(valorBruto)}</td>
+    <td>${formatBR(valorICMS)}</td>
+    <td>0,00</td>
+    <td>0,00</td>
+    <td>${formatBR(valorPIS)}</td>
+    <td>${formatBR(valorBruto)}</td>
+      </tr>
+  <tr>
+    <th>Valor do Frete</th>
+    <th>Valor do Seguro</th>
+    <th>Desconto</th>
+    <th>Outras Despesas Acessórias</th>
+    <th>COFINS</th>
+    <th>Valor do IPI</th>
+    
+  </tr>
+  <tr>
+    <td>0,00</td>
+    <td>0,00</td>
+    <td>0,00</td>
+    <td>0,00</td>
+    <td>${formatBR(valorCOFINS)}</td>
+    <td>${formatBR(valorIPI)}</td>
+    
+  </tr>
+  <tr>
+    <th style="background-color: lime;">Valor do IBS da UF</th>
+    <th style="background-color: lime;">Valor do IBS do Município</th>
+    <th style="background-color: lime;">Valor do Imposto Seletivo</th>
+    <th style="background-color: lime;">Valor do CBS</th>
+    <th style="background-color: lime;">Valor Aproximado dos Tributos</th>
+    <th>Valor Total da Nota Fiscal</th>
+  </tr>
+  <tr>
+    <td>${formatBR(valorIBSe)}</td>
+    <td>${formatBR(valorIBSm)}</td>
+    <td>${formatBR(valorIS)}</td>
+    <td>${formatBR(valorCBS)}</td>
+    <td>${formatBR(valorIBSe+valorIBSm+valorCBS+valorIS)}</td>
+    <td>${formatBR(totalNota)}</td>
+  </tr>
+</table>
+
+<br>Detalhes:<p>
+BASE IS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto)<p>
+BASE IBS/ CBS (Valor Líquido do produto + frete + Seguro + Despesas - Desconto + IS)<p>
+Caso a empresa cumpra com as obrigações acessórias, o IBS/CBS não serão somados/cobrados no total da NFe em 2026.
+
+`;
+
+
+
   }
 
 function calcularReverso(event) {
