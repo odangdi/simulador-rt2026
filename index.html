@@ -359,6 +359,24 @@ function calcularReverso(event) {
 
   </footer>
 
+<button onclick="compartilhar()">🔗 Compartilhar esta página</button>
+
+<script>
+function compartilhar() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Simulador RT 2026',
+      text: 'Confira este simulador de impostos baseado na Reforma Tributária!',
+      url: 'https://odangdi.github.io/simulador-rt2026/',
+    })
+    .then(() => console.log('Compartilhado com sucesso'))
+    .catch((error) => console.log('Erro ao compartilhar:', error));
+  } else {
+    alert('Compartilhamento não suportado neste navegador. Copie o link manualmente:\n\nhttps://odangdi.github.io/simulador-rt2026/');
+  }
+}
+</script>
+
 
 <script>
   if ('serviceWorker' in navigator) {
