@@ -1,4 +1,4 @@
-const cacheName = 'simulador-rt2026-v1';
+const cacheName = 'Simulador RT 2026';
 const filesToCache = [
   '/',
   '/index.html',
