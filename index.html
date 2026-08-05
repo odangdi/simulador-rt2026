@@ -66,7 +66,7 @@
     }
     .card-hover:hover {
       transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
     }
     .input-glow:focus {
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -75,6 +75,7 @@
       background: linear-gradient(145deg, #f8fafc, #e2e8f0);
     }
   </style>
+
 
 
 
@@ -148,43 +149,43 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">ICMS (%)</label>
-              <input type="number" id="icms" value="18" step="0.01" 
+              <input type="number" id="icms" value="18.00" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">IPI (%)</label>
-              <input type="number" id="ipi" value="9.75" step="0.01" 
+              <input type="number" id="ipi" value="0.00" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">PIS (%)</label>
-              <input type="number" id="pis" value="1.65" step="0.01" 
+              <input type="number" id="pis" value="0.00" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">COFINS (%)</label>
-              <input type="number" id="cofins" value="7.6" step="0.01" 
+              <input type="number" id="cofins" value="0.00" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">IBS Estadual (%)</label>
-              <input type="number" id="ibse" value="0.10" step="0.01" 
+              <input type="number" id="ibse" value="0.05" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">IBS Municipal (%)</label>
-              <input type="number" id="ibsm" value="0.00" step="0.01" 
+              <input type="number" id="ibsm" value="0.05" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
             <div class="space-y-2">
               <label class="block text-white font-medium text-sm">CBS (%)</label>
-              <input type="number" id="cbs" value="0.90" step="0.01" 
+              <input type="number" id="cbs" value="9.21" step="0.01" 
                      class="w-full px-4 py-3 number-input border border-white/20 rounded-xl text-gray-700 focus:outline-none input-glow transition-all duration-200">
             </div>
             
@@ -229,6 +230,7 @@
         </div>
       </div>
     </div>
+
 
 
 <!-- Footer -->
@@ -327,7 +329,7 @@ function compartilhar() {
     }
 
 function calcular() {
-const valorLiquido = parseFloat(document.getElementById('valorLiquido').value.replace(/\./g, '').replace(',', '.')) || 0;
+  const valorLiquido = parseFloat(document.getElementById('valorLiquido').value.replace(/\./g, '').replace(',', '.')) || 0;
 
   const icms = (parseFloat(document.getElementById('icms').value) || 0) / 100;
   const ipi = (parseFloat(document.getElementById('ipi').value) || 0) / 100;
@@ -338,39 +340,42 @@ const valorLiquido = parseFloat(document.getElementById('valorLiquido').value.re
   const cbs = (parseFloat(document.getElementById('cbs').value) || 0) / 100;
   const is = (parseFloat(document.getElementById('is').value) || 0) / 100;
 
-  // Calcula fator considerando o efeito do ICMS sobre PIS e COFINS (não cumulativo)
+  // 1) Formação do preço bruto pela sistemática tradicional.
+  //    Quando PIS e COFINS estiverem zerados, o fator fica equivalente a 1 - ICMS.
   const fator = 1 - (icms + (pis * (1 - icms)) + (cofins * (1 - icms)));
+  const valorBruto = fator > 0 ? valorLiquido / fator : 0;
 
-  // Valor bruto antes dos impostos embutidos
-  const valorBruto = valorLiquido / fator;
-
-  // Cálculos dos impostos conforme bases:
-  const valorICMS = valorBruto * icms;
-  const valorSemICMS = valorBruto - valorICMS;
-  const valorPIS = valorSemICMS * pis;
-  const valorCOFINS = valorSemICMS * cofins;
-  const valorIPI = valorBruto * ipi;
-  
-  // Valor total da nota: valor bruto + IPI
-  const totalNota = valorBruto + valorIPI;
-
-  // IS: base é valor líquido
+  // 2) Imposto Seletivo, quando informado.
+  //    No modelo atual, o IS usa como base o valor líquido.
   const baseIS = valorLiquido;
   const valorIS = baseIS * is;
 
-  // IBS e CBS: base é valor líquido + IS
+  // 3) IBS Estadual, IBS Municipal e CBS.
+  //    Mantida a sua premissa operacional: IBS/CBS calculados sobre o valor líquido + IS.
   const baseIBSCBS = baseIS + valorIS;
   const valorIBSe = baseIBSCBS * ibse;
   const valorIBSm = baseIBSCBS * ibsm;
   const valorCBS = baseIBSCBS * cbs;
+  const totalIBSCBS = valorIBSe + valorIBSm + valorCBS;
 
-  // Carga tributária tradicional (ICMS + IPI + PIS + COFINS)
+  // 4) Base do ICMS com IBS/CBS.
+  //    Correção solicitada: IBS Estadual, IBS Municipal e CBS devem compor a base do ICMS.
+  const baseICMS = valorBruto + totalIBSCBS;
+  const valorICMS = baseICMS * icms;
+
+  // 5) Demais tributos tradicionais.
+  const valorSemICMS = valorBruto - valorICMS;
+  const valorPIS = valorSemICMS * pis;
+  const valorCOFINS = valorSemICMS * cofins;
+  const valorIPI = valorBruto * ipi;
+
+  // 6) Totais da nota.
+  const totalNota = valorBruto + valorIPI;
+  const totalNotaComRT = valorBruto + valorIPI + valorIBSe + valorIBSm + valorCBS + valorIS;
+
+  // 7) Cargas tributárias.
   const cargaTributaria = valorICMS + valorIPI + valorPIS + valorCOFINS;
-
-  // Carga tributária LC 2014/2025 (IBS + CBS + IS)
   const cargaTributariaLC = valorIBSe + valorIBSm + valorCBS + valorIS;
-
-  // Soma total dos impostos para detalhes
   const totalImpostos = valorICMS + valorPIS + valorCOFINS + valorIPI + valorIS + valorIBSe + valorIBSm + valorCBS;
 
   // Preparar array para detalhamento
@@ -385,10 +390,9 @@ const valorLiquido = parseFloat(document.getElementById('valorLiquido').value.re
     { nome: 'IS', percentual: is * 100, valor: valorIS, cor: 'bg-orange-500' }
   ];
 
-
-// Exibir resultados principais
-let resultadoHTML = `
-  <div class="grid grid-cols--1 sm:grid-cols-3 gap-4 mb-6">
+  // Exibir resultados principais
+  let resultadoHTML = `
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white/10 rounded-xl px-0 py-3 text-center">
       <div class="text-xs sm:text-sm font-bold text-white mb-1 break-words">R$ ${valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Valor Total dos Produtos</div>
@@ -399,29 +403,33 @@ let resultadoHTML = `
     </div>
     <div class="bg-white/10 rounded-xl px-0 py-3 text-center">
       <div class="text-xs sm:text-sm font-bold text-accent mb-1 break-words">R$ ${cargaTributariaLC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Carga Tributária IBS, CBS, IS (somente informativo em 2026)</div>
+      <div class="text-white/60 text-xs">Carga Tributária IBS, CBS, IS</div>
+    </div>
+    <div class="bg-white/10 rounded-xl px-0 py-3 text-center col-span-3">
+      <div class="text-xs sm:text-sm font-bold text-accent mb-1 break-words">R$ ${baseICMS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div class="text-white/60 text-xs">Base de Cálculo do ICMS com IBS Estadual, IBS Municipal e CBS</div>
     </div>
     <div class="bg-white/10 rounded-xl px-0 py-3 text-center col-span-3">
       <div class="text-xs sm:text-sm font-bold text-accent mb-1 break-words">R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Valor Total da Nota (sem IBS, CBS, IS)</div>
+      <div class="text-white/60 text-xs">Valor Total dos Produtos (Sem IBS, CBS e IS)</div>
+    </div>
+    <div class="bg-white/10 rounded-xl px-0 py-3 text-center col-span-3">
+      <div class="text-xs sm:text-sm font-bold text-accent mb-1 break-words">R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div class="text-white/60 text-xs">Valor Total da Nota (Com IBS Estadual, IBS Municipal, CBS e IS)</div>
     </div>
   </div>
-
-
-
-
-    <div class="space-y-3">
-      <h3 class="text-white font-semibold mb-4 flex items-center space-x-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-        </svg>
-        <span>Detalhamento dos Impostos</span>
-      </h3>`;
+  <div class="space-y-3">
+    <h3 class="text-white font-semibold mb-4 flex items-center space-x-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <span>Detalhamento dos Impostos</span>
+    </h3>`;
 
   impostos.forEach(imposto => {
-  const percentualDoTotal = (imposto.valor / totalImpostos) * 100;
-  if (imposto.valor > 0) {
-    resultadoHTML += `
+    const percentualDoTotal = totalImpostos > 0 ? (imposto.valor / totalImpostos) * 100 : 0;
+    if (imposto.valor > 0) {
+      resultadoHTML += `
       <div class="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors duration-200">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-3">
@@ -435,16 +443,13 @@ let resultadoHTML = `
           <div class="${imposto.cor} h-2 rounded-full transition-all duration-500" style="width: ${percentualDoTotal.toFixed(2)}%"></div>
         </div>
       </div>`;
-  }
-});
-
+    }
+  });
 
   resultadoHTML += `</div>`;
-
   document.getElementById('resultado').innerHTML = resultadoHTML;
   document.getElementById('resultado').style.animation = 'slideUp 0.5s ease-out';
 }
-
 // Máscara de moeda BRL no campo valorLiquido
 document.getElementById('valorLiquido').addEventListener('input', function(e) {
   let value = e.target.value;
