@@ -1,11 +1,11 @@
 {
-  "name": "Simulador NFe RT 2026 - Cálculo de Impostos",
-  "short_name": "Simunador NFe RT 2026",
+  "name": "Simulador NFe RT 2027",
+  "short_name": "Simulador NFe RT 2027",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#fafafa",
   "theme_color": "#4CAF50",
-  "description": "Simulador de cálculo de impostos com base na Reforma Tributária",
+  "description": "Simulador de cálculo de impostos da Nfe com base na Reforma Tributária",
   "icons": [
     {
       "src": "icon.png",
@@ -19,3 +19,4 @@
     }
   ]
 }
+
