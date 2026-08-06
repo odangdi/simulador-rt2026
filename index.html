@@ -220,7 +220,7 @@
         </div>
 
         <div id="resultado" class="space-y-4">
-          <div class="bg-white/10 rounded-xl p-4 text-center">
+          <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
             <p class="text-white/80 text-sm mb-2">Clique em "Calcular Impostos" para ver os resultados</p>
             <div class="w-12 h-12 mx-auto bg-white/20 rounded-full flex items-center justify-center animate-pulse-soft">
               <svg class="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,31 +393,37 @@ function calcular() {
 
   // Exibir resultados principais
   let resultadoHTML = `
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center">
-      <div class="text-sm sm:text-base font-bold text-white mb-1 break-words">R$ ${valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 w-full">
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-white mb-1 whitespace-nowrap">R$ ${valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Valor Total dos Produtos</div>
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center">
-      <div class="text-sm sm:text-base font-bold text-warning mb-1 break-words">R$ ${cargaTributaria.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-warning mb-1 whitespace-nowrap">R$ ${cargaTributaria.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Carga Tributária ICMS, IPI, PIS, Cofins</div>
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 break-words">R$ ${cargaTributariaLC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${cargaTributariaLC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Carga Tributária IBS, CBS, IS</div>
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center col-span-1 sm:col-span-3">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 break-words">R$ ${baseICMS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Base de cálculo do ICMS (com IBS Estadual, IBS Municipal e CBS)"
-<small class="text-white/50"> Em São Paulo, conf. Resposta a Consulta 33083/2026, "O IBS e a CBS compõem o valor da operação para fins de ICMS</small></div>
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${baseICMS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div class="text-white/60 text-xs">
+    Base de cálculo do ICMS (com IBS Estadual, IBS Municipal e CBS)
+    <br>
+    <small class="text-white/50">
+        Em São Paulo, conf. Resposta à Consulta 33083/2026:
+        "O IBS e a CBS compõem o valor da operação para fins de ICMS."
+    </small>
+</div>
 
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center col-span-1 sm:col-span-3">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 break-words">R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Valor Total dos Produtos (Sem IBS, CBS e IS)</div>
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 text-center col-span-1 sm:col-span-3">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 break-words">R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
+      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       <div class="text-white/60 text-xs">Valor Total da Nota (Com IBS Estadual, IBS Municipal, CBS e IS)</div>
     </div>
   </div>
