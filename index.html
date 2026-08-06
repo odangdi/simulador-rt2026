@@ -110,7 +110,7 @@
           <p class="text-white/80 text-sm leading-relaxed">
             Esta ferramenta simula o cálculo de impostos de uma NFe em operações de venda para 
             <em class="text-accent font-medium">Industrialização</em>, considerando os tributos previstos na Reforma Tributária a partir de 2026. Aplicável a empresas optantes pelo Lucro Real. 
-       <p><p class="text-white/80 text-sm leading-relaxed">- Atenção, ao informar os percentuais dos impostos.
+          <p class="text-white/80 text-sm leading-relaxed mt-2">- Atenção, ao informar os percentuais dos impostos.
           </p>
         </div>
       </div>
@@ -392,30 +392,68 @@ function calcular() {
   ];
 
   // Exibir resultados principais
-  let resultadoHTML = `
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 w-full">
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-white mb-1 whitespace-nowrap">R$ ${valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Valor Total dos Produtos</div>
+let resultadoHTML = `
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 w-full">
+
+  <div class="bg-white/10 rounded-xl p-4 sm:col-span-2 flex flex-col items-center text-center">
+    <div class="text-xl sm:text-2xl font-bold text-white">
+      R$ ${valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-warning mb-1 whitespace-nowrap">R$ ${cargaTributaria.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Carga Tributária ICMS, IPI, PIS, Cofins</div>
+    <div class="text-white/70 text-sm mt-1">
+      Valor Total dos Produtos
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${cargaTributariaLC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Carga Tributária IBS, CBS, IS</div>
+  </div>
+
+  <div class="bg-white/10 rounded-xl p-4 sm:col-span-2 flex flex-col items-center text-center">
+    <div class="text-xl sm:text-2xl font-bold text-white">
+      R$ ${cargaTributaria.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${baseICMS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">
-    Base de cálculo do ICMS (com IBS Estadual, IBS Municipal e CBS)
-    <br>
-    <small class="text-white/50">
-        Em São Paulo, conf. Resposta à Consulta 33083/2026:
-        "O IBS e a CBS compõem o valor da operação para fins de ICMS."
+    <div class="text-white/70 text-sm mt-1">
+      Carga Tributária ICMS, IPI, PIS e COFINS
+    </div>
+  </div>
+
+  <div class="bg-white/10 rounded-xl p-4 sm:col-span-2 flex flex-col items-center text-center">
+    <div class="text-xl sm:text-2xl font-bold text-white">
+      R$ ${cargaTributariaLC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </div>
+    <div class="text-white/70 text-sm mt-1">
+      Carga Tributária IBS, CBS e IS
+    </div>
+  </div>
+
+  <div class="bg-white/10 rounded-xl p-4 sm:col-span-2 flex flex-col items-center text-center">
+    <div class="text-xl sm:text-2xl font-bold text-white">
+      R$ ${baseICMS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </div>
+
+    <div class="text-white/70 text-sm mt-1">
+      Base de cálculo do ICMS (com IBS Estadual, IBS Municipal e CBS)
+    </div>
+
+    <small class="text-white/50 text-xs mt-2 leading-relaxed">
+      Conforme a Resposta à Consulta Tributária nº 33.083/2026 (SP),
+      o IBS e a CBS compõem o valor da operação para fins de incidência do ICMS.
     </small>
-</div>
+  </div>
+
+  <div class="bg-white/10 rounded-xl p-4 flex flex-col items-center text-center">
+    <div class="text-lg sm:text-xl font-bold text-white">
+      R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </div>
+    <div class="text-white/70 text-xs mt-1">
+      Valor Total da Nota<br>(Sem IBS, CBS e IS)
+    </div>
+  </div>
+
+  <div class="bg-white/10 rounded-xl p-4 flex flex-col items-center text-center">
+    <div class="text-lg sm:text-xl font-bold text-white">
+      R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </div>
+    <div class="text-white/70 text-xs mt-1">
+      Valor Total da Nota<br>(Com IBS Estadual, IBS Municipal, CBS e IS)
+    </div>
+  </div>
 
     </div>
     <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
