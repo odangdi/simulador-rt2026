@@ -442,7 +442,7 @@ let resultadoHTML = `
       R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
     </div>
     <div class="text-white/70 text-xs mt-1">
-      Valor Total da Nota<br>(Sem IBS, CBS e IS)
+      Valor Total da Nota c/ IPI<br>(Sem IBS, CBS e IS)
     </div>
   </div>
 
@@ -451,20 +451,12 @@ let resultadoHTML = `
       R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
     </div>
     <div class="text-white/70 text-xs mt-1">
-      Valor Total da Nota<br>(Com IBS Estadual, IBS Municipal, CBS e IS)
+      Valor Total da Not c/ IPI<br>+ IBS Estadual, IBS Municipal, CBS e IS
     </div>
   </div>
 
     </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${totalNota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Valor Total dos Produtos (Sem IBS, CBS e IS)</div>
-    </div>
-    <div class="bg-white/10 rounded-xl px-3 py-4 w-full min-w-0 flex flex-col justify-center items-center">
-      <div class="text-sm sm:text-base font-bold text-accent mb-1 whitespace-nowrap">R$ ${totalNotaComRT.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div class="text-white/60 text-xs">Valor Total da Nota (Com IBS Estadual, IBS Municipal, CBS e IS)</div>
-    </div>
-  </div>
+   
   <div class="space-y-3">
     <h3 class="text-white font-semibold mb-4 flex items-center space-x-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
