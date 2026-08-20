@@ -1449,34 +1449,46 @@ body.dark-theme{
 
                         <div class="main-value-box">
 
-                            <div class="field">
+<div class="fields-grid">
 
-                                <label for="valorLiquido">
-                                    Valor Líquido do Produto (custo + lucro)
-                                </label>
+    <div class="field">
+        <label for="quantidade">
+            Quantidade
+        </label>
 
-                                <div class="input-wrapper main-input">
+        <div class="input-wrapper">
+            <input
+                id="quantidade"
+                type="number"
+                min="0"
+                step="0.001"
+                value="1"
+            >
+        </div>
+    </div>
 
-                                    <span class="currency">
-                                        R$
-                                    </span>
+    <div class="field">
+        <label for="valorLiquido">
+            Valor Unitário Líquido
+        </label>
 
-                                    <input
-                                        id="valorLiquido"
-                                        class="money"
-                                        type="text"
-                                        inputmode="decimal"
-                                        autocomplete="off"
-                                        placeholder="0,00"
-                                    >
+        <div class="input-wrapper">
+            <span class="currency">
+                R$
+            </span>
 
-                                </div>
+            <input
+                id="valorLiquido"
+                class="money"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                placeholder="0,00"
+            >
+        </div>
+    </div>
 
-                                <p class="help">
-                                    (não foi considerado Desp. Acess., Frete, Seguro, Descontos)
-                                </p>
-
-                            </div>
+</div>
 
                         </div>
 
@@ -2489,6 +2501,11 @@ O ICMS é calculado sobre a base original do produto acrescida* dos valores de I
 
         return {
 
+quantidade:
+    Number(
+        document.getElementById("quantidade").value
+    ) || 0,
+
             valorLiquido:
                 numeroBR(valorLiquido.value),
 
@@ -2543,7 +2560,13 @@ O ICMS é calculado sobre a base original do produto acrescida* dos valores de I
 
 function calcularImpostos(dados) {
 
-    const valorLiquido = dados.valorLiquido;
+const valorUnitario = dados.valorLiquido;
+
+const quantidade = dados.quantidade;
+
+const valorLiquido =
+    valorUnitario * quantidade;
+
 
     const icms = dados.icms / 100;
     const ipi = dados.ipi / 100;
@@ -2702,7 +2725,11 @@ function calcularImpostos(dados) {
 
     return {
 
-        valorLiquido,
+quantidade,
+
+valorUnitario,
+ 
+valorLiquido,
 
         fator,
 
@@ -2936,6 +2963,27 @@ const graficoHTML = impostos
 
             <div class="result-section-title">
                 Composição do Valor da Nota
+
+<div class="result-item">
+    <div class="result-item-label">
+        Quantidade
+    </div>
+
+    <div class="result-item-value">
+        ${formatarNumero(resultado.quantidade)}
+    </div>
+</div>
+
+<div class="result-item">
+    <div class="result-item-label">
+        Valor Unitário
+    </div>
+
+    <div class="result-item-value">
+        ${formatarMoeda(resultado.valorUnitario)}
+    </div>
+</div>
+
             </div>
 
             <div class="result-grid">
