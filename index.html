@@ -87,6 +87,55 @@
                 0 2px 8px rgba(16, 24, 40, 0.04);
         }
 
+body.dark-theme .result-item{
+    background:#1e293b;
+}
+
+body.dark-theme .tax-chart-container{
+    background:#111827;
+}
+
+body.dark-theme .tax-bar{
+    background:#334155;
+}
+
+body.dark-theme input{
+    color:#f8fafc;
+}
+
+body.dark-theme .input-wrapper{
+    background:#1e293b;
+}
+
+body.dark-theme .empty-icon{
+    background:#1e293b;
+}
+
+
+body.dark-theme{
+
+    --primary: #14b8a6;
+    --primary-dark: #0f766e;
+    --primary-light: #2dd4bf;
+
+    --background: #0f172a;
+    --card: #111827;
+
+    --foreground: #f8fafc;
+
+    --muted: #94a3b8;
+    --muted-light: #64748b;
+
+    --border: #334155;
+    --input: #475569;
+
+    --accent: #062c2c;
+
+    --warning-bg: #332701;
+
+    background:#0f172a;
+}
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -1128,6 +1177,84 @@
             }
         }
 
+
+/* =====================================================
+   DETALHAMENTO DOS IMPOSTOS
+   ===================================================== */
+
+.tax-chart-container{
+    margin-top:12px;
+    padding:16px;
+    border-radius:12px;
+    background:#ffffff;
+    border:1px solid var(--border);
+}
+
+.tax-bar-row{
+    margin-bottom:14px;
+}
+
+.tax-bar-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:5px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.tax-bar{
+    width:100%;
+    height:30px;
+    background:#edf2f7;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.tax-bar-fill{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding-right:10px;
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    white-space:nowrap;
+    transition:all .5s ease;
+}
+
+.icms-bar{background:#2563eb;}
+.ipi-bar{background:#dc2626;}
+.pis-bar{background:#7c3aed;}
+.cofins-bar{background:#9333ea;}
+.ibse-bar{background:#059669;}
+.ibsm-bar{background:#10b981;}
+.cbs-bar{background:#d97706;}
+.is-bar{background:#475569;}
+
+
+
+.theme-button{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:18px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.25);
+    color:white;
+    transition:.2s;
+}
+
+.theme-button:hover{
+    background:rgba(255,255,255,0.20);
+}
+
+
+
     </style>
 </head>
 
@@ -1181,9 +1308,22 @@
 
             </div>
 
-            <span class="badge">
-                Lucro Real
-            </span>
+<div style="display:flex;align-items:center;gap:10px;">
+
+    <span class="badge">
+        Lucro Real
+    </span>
+
+    <button
+        id="toggleTheme"
+        class="theme-button"
+        type="button"
+        title="Alternar tema"
+    >
+        🌙
+    </button>
+
+</div>
 
         </div>
 
@@ -2680,6 +2820,8 @@ function calcularImpostos(dados) {
 
 function gerarResultadoHTML(resultado) {
 
+    const dados = obterDados();
+
     const totalIBS =
         resultado.valorIBSEstadual +
         resultado.valorIBSMunicipal;
@@ -2690,16 +2832,99 @@ function gerarResultadoHTML(resultado) {
         resultado.valorCBS +
         resultado.valorIS;
 
+    const impostos = [
+        {
+            nome: `ICMS (${formatarNumero(dados.icms)}%)`,
+            valor: resultado.valorICMSRecalculado,
+            classe: "icms-bar"
+        },
+        {
+            nome: `IPI (${formatarNumero(dados.ipi)}%)`,
+            valor: resultado.valorIPI,
+            classe: "ipi-bar"
+        },
+        {
+            nome: `PIS (${formatarNumero(dados.pis)}%)`,
+            valor: resultado.valorPIS,
+            classe: "pis-bar"
+        },
+        {
+            nome: `COFINS (${formatarNumero(dados.cofins)}%)`,
+            valor: resultado.valorCOFINS,
+            classe: "cofins-bar"
+        },
+        {
+            nome: `IBS Estadual (${formatarNumero(dados.ibsEstadual)}%)`,
+            valor: resultado.valorIBSEstadual,
+            classe: "ibse-bar"
+        },
+        {
+            nome: `IBS Municipal (${formatarNumero(dados.ibsMunicipal)}%)`,
+            valor: resultado.valorIBSMunicipal,
+            classe: "ibsm-bar"
+        },
+        {
+            nome: `CBS (${formatarNumero(dados.cbs)}%)`,
+            valor: resultado.valorCBS,
+            classe: "cbs-bar"
+        },
+        {
+            nome: `IS (${formatarNumero(dados.is)}%)`,
+            valor: resultado.valorIS,
+            classe: "is-bar"
+        }
+    ];
+
+const totalImpostos = impostos.reduce(
+    (total, item) => total + item.valor,
+    0
+);
+``
+
+const graficoHTML = impostos
+    .map(item => {
+
+        const percentualReal =
+            totalImpostos > 0
+                ? (item.valor / totalImpostos) * 100
+                : 0;
+
+        const larguraBarra =
+            Math.max(percentualReal, 3);
+
+        const percentualTexto =
+            percentualReal < 1
+                ? percentualReal.toFixed(1) + "%"
+                : percentualReal.toFixed(0) + "%";
+
+        return `
+            <div class="tax-bar-row">
+
+                <div class="tax-bar-label">
+                    <span>${item.nome}</span>
+                    <span>${formatarMoeda(item.valor)}</span>
+                </div>
+
+                <div class="tax-bar">
+                    <div
+                        class="tax-bar-fill ${item.classe}"
+                        style="width:${larguraBarra}%"
+                    >
+                        ${percentualTexto}
+                    </div>
+                </div>
+
+            </div>
+        `;
+
+    })
+    .join("");
+``
 
     return `
-
         <div class="result-content">
 
-
-            <!-- VALOR TOTAL DA NOTA -->
-
             <div class="result-highlight">
-
                 <div class="result-highlight-label">
                     Valor Total da Nota
                 </div>
@@ -2707,24 +2932,14 @@ function gerarResultadoHTML(resultado) {
                 <div class="result-total">
                     ${formatarMoeda(resultado.totalNotaComIBSCBSIS)}
                 </div>
-
             </div>
-
-
-
-            <!-- COMPOSIÇÃO DO VALOR -->
 
             <div class="result-section-title">
                 Composição do Valor da Nota
             </div>
 
-
             <div class="result-grid">
-
-
                 <div class="result-item">
-
-
                     <div class="result-item-label">
                         Valor Total Bruto dos Produtos
                     </div>
@@ -2732,13 +2947,9 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorBruto)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
                         Valor Líquido Total
                     </div>
@@ -2746,43 +2957,25 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorLiquido)}
                     </div>
-
                 </div>
-
-
-
-
             </div>
-
-
-
-
-            <!-- TRIBUTOS DESTACADOS (ATUAIS) -->
 
             <div class="result-section-title">
                 Tributos Destacados (ATUAIS)
             </div>
 
-
             <div class="result-grid">
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
-                        ICMS (Com IBS/CBS na base de calculo)
+                        ICMS (Com IBS/CBS na Base)
                     </div>
 
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorICMSRecalculado)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
                         IPI
                     </div>
@@ -2790,72 +2983,45 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorIPI)}
                     </div>
-
                 </div>
-
-
-
-
             </div>
-
-
-
-
-
-            <!-- REFORMA TRIBUTÁRIA -->
 
             <div class="result-section-title">
                 Tributos da Reforma Tributária
             </div>
 
-
             <div class="result-grid">
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
-                        IBS Estadual (IS entra na base)
+                        IBS Estadual
                     </div>
 
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorIBSEstadual)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
-                        IBS Municipal (IS entra na base)
+                        IBS Municipal
                     </div>
 
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorIBSMunicipal)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
-                        CBS (IS entra na base)
+                        CBS
                     </div>
 
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorCBS)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item">
-
                     <div class="result-item-label">
                         IS
                     </div>
@@ -2863,30 +3029,23 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorIS)}
                     </div>
-
                 </div>
-
-
-
             </div>
 
+            <div class="result-section-title">
+                Detalhamento dos Impostos
+            </div>
 
-
-
-
-            <!-- RESUMO -->
+            <div class="tax-chart-container">
+                ${graficoHTML}
+            </div>
 
             <div class="result-section-title">
                 Resumo dos Tributos
             </div>
 
-
             <div class="result-grid">
-
-
-
                 <div class="result-item highlight">
-
                     <div class="result-item-label">
                         Total IBS + CBS + IS
                     </div>
@@ -2894,13 +3053,9 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(totalNovosTributos)}
                     </div>
-
                 </div>
 
-
-
                 <div class="result-item highlight">
-
                     <div class="result-item-label">
                         Total dos Tributos
                     </div>
@@ -2908,18 +3063,11 @@ function gerarResultadoHTML(resultado) {
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.totalTributos)}
                     </div>
-
                 </div>
-
-
-
             </div>
 
-
         </div>
-
     `;
-
 }
 
     /* =========================================================
@@ -3084,6 +3232,48 @@ function gerarResultadoHTML(resultado) {
 
         }
     );
+
+
+/* =========================================================
+   TEMA ESCURO
+   ========================================================= */
+
+const toggleTheme =
+    document.getElementById("toggleTheme");
+
+toggleTheme.addEventListener(
+    "click",
+    () => {
+
+        document.body.classList.toggle(
+            "dark-theme"
+        );
+
+        const darkMode =
+            document.body.classList.contains(
+                "dark-theme"
+            );
+
+        toggleTheme.textContent =
+            darkMode ? "☀️" : "🌙";
+
+        localStorage.setItem(
+            "tema",
+            darkMode ? "dark" : "light"
+        );
+    }
+);
+
+if(localStorage.getItem("tema") === "dark"){
+
+    document.body.classList.add(
+        "dark-theme"
+    );
+
+    toggleTheme.textContent = "☀️";
+}
+
+
 
 </script>
 
