@@ -1225,6 +1225,10 @@ body.dark-theme{
     transition:all .5s ease;
 }
 
+
+.tax-bar-fill[style*="width:0%"]{
+    padding-right:0;
+}
 .icms-bar{background:#2563eb;}
 .ipi-bar{background:#dc2626;}
 .pis-bar{background:#7c3aed;}
@@ -1960,7 +1964,7 @@ body.dark-theme{
 O cálculo considera a transição para a Reforma Tributária, não contemplando PIS/COFINS na composição dos tributos.
 IPI (quando devido), IS, IBS Estadual, IBS Municipal e CBS são adicionados ao valor total da nota.
 Os valores apresentados possuem finalidade de simulação e apoio à análise fiscal.
-O ICMS é calculado por dentro, considerando as alíquotas de IBS Estadual, IBS Municipal e CBS no fator de formação da base.
+O ICMS é calculado sobre a base original do produto acrescida* dos valores de IBS Estadual, IBS Municipal e CBS, sendo destacado na nota fiscal.
 *Conforme Resposta à Consulta Tributária nº 33.083/2026 (SP).
 
                     </p>
@@ -2559,89 +2563,158 @@ quantidade:
        ========================================================= */
 
 function calcularImpostos(dados) {
-    const valorUnitario = dados.valorLiquido;
-    const quantidade = dados.quantidade;
-    const valorLiquido = valorUnitario * quantidade;
+
+const valorUnitario = dados.valorLiquido;
+
+const quantidade = dados.quantidade;
+
+const valorLiquido =
+    valorUnitario * quantidade;
+
 
     const icms = dados.icms / 100;
     const ipi = dados.ipi / 100;
     const pis = dados.pis / 100;
     const cofins = dados.cofins / 100;
+
     const ibsEstadual = dados.ibsEstadual / 100;
     const ibsMunicipal = dados.ibsMunicipal / 100;
     const cbs = dados.cbs / 100;
     const is = dados.is / 100;
 
-    // =====================================================
-    // 1. IMPOSTO SELETIVO
-    // =====================================================
-    const baseIS = valorLiquido;
-    const valorIS = baseIS * is;
 
     // =====================================================
-    // 2. IBS E CBS
-    // O IS integra a base do IBS/CBS conforme a logica
-    // adotada neste simulador.
+    // 1. FORMAÇÃO DO VALOR BRUTO (CÁLCULO POR DENTRO)
     // =====================================================
-    const baseIBSCBS = valorLiquido + valorIS;
-    const valorIBSEstadual = baseIBSCBS * ibsEstadual;
-    const valorIBSMunicipal = baseIBSCBS * ibsMunicipal;
-    const valorCBS = baseIBSCBS * cbs;
-    const fatorIBSCBS = ibsEstadual + ibsMunicipal + cbs;
 
-    // =====================================================
-    // 3. ICMS POR DENTRO CONSIDERANDO IBS E CBS
-    // Exemplo: 100 / (1 - 18% - 7,59%) = 134,39
-    // ICMS: 134,39 x 18% = 24,19
-    // =====================================================
-    const divisorICMS = 1 - icms - fatorIBSCBS;
-
-    if (divisorICMS <= 0) {
-        throw new Error(
-            "A soma das aliquotas de ICMS, IBS Estadual, " +
-            "IBS Municipal e CBS deve ser menor que 100%."
+    const fator =
+        1 -
+        (
+            icms +
+            (pis * (1 - icms)) +
+            (cofins * (1 - icms))
         );
-    }
 
-    const baseICMSRecalculada = valorLiquido / divisorICMS;
-    const valorICMSRecalculado = baseICMSRecalculada * icms;
-    const valorProdutosComICMS = valorLiquido + valorICMSRecalculado;
 
-    // Campos mantidos para compatibilidade com a exibicao atual.
-    const fator = divisorICMS;
-    const valorBruto = valorProdutosComICMS;
-    const baseICMSOriginal = valorLiquido / (1 - icms);
-    const valorICMSOriginal = baseICMSOriginal * icms;
+    const valorBruto =
+        valorLiquido / fator;
+
+
 
     // =====================================================
-    // 4. PIS E COFINS
-    // Mantidos no simulador para cenarios de transicao.
+    // 2. ICMS ORIGINAL
     // =====================================================
-    const basePISCOFINS = valorLiquido;
-    const valorPIS = basePISCOFINS * pis;
-    const valorCOFINS = basePISCOFINS * cofins;
+
+    const baseICMSOriginal =
+        valorBruto;
+
+
+    const valorICMSOriginal =
+        baseICMSOriginal * icms;
+
+
 
     // =====================================================
-    // 5. IPI
+    // 3. PIS E COFINS
+    // BASE SEM ICMS
     // =====================================================
-    const valorIPI = valorProdutosComICMS * ipi;
-    const totalNotaSemIBSCBSIS = valorProdutosComICMS + valorIPI;
+
+    const basePISCOFINS =
+        valorBruto - valorICMSOriginal;
+
+
+    const valorPIS =
+        basePISCOFINS * pis;
+
+
+    const valorCOFINS =
+        basePISCOFINS * cofins;
+
+
 
     // =====================================================
-    // 6. TOTAL DA NOTA
-    // Preco liquido + ICMS + IPI + IBS + CBS + IS.
+    // 4. IPI
     // =====================================================
+
+    const valorIPI =
+        valorBruto * ipi;
+
+
+
+    const totalNotaSemIBSCBSIS =
+        valorBruto + valorIPI;
+
+
+
+    // =====================================================
+    // 5. IMPOSTO SELETIVO
+    // =====================================================
+
+    const baseIS =
+        valorLiquido;
+
+
+    const valorIS =
+        baseIS * is;
+
+
+
+    // =====================================================
+    // 6. BASE IBS / CBS
+    // =====================================================
+
+    const baseIBSCBS =
+        baseIS + valorIS;
+
+
+
+    const valorIBSEstadual =
+        baseIBSCBS * ibsEstadual;
+
+
+    const valorIBSMunicipal =
+        baseIBSCBS * ibsMunicipal;
+
+
+    const valorCBS =
+        baseIBSCBS * cbs;
+
+
+
+    // =====================================================
+    // 7. RECÁLCULO ICMS
+    // INCLUI IBS + CBS NA BASE
+    // =====================================================
+
+    const baseICMSRecalculada =
+        baseICMSOriginal +
+        valorIBSEstadual +
+        valorIBSMunicipal +
+        valorCBS;
+
+
+    const valorICMSRecalculado =
+        baseICMSRecalculada * icms;
+
+
+
+    // =====================================================
+    // 8. TOTAL DA NOTA
+    // =====================================================
+
     const totalNotaComIBSCBSIS =
-        valorProdutosComICMS +
-        valorIPI +
+        totalNotaSemIBSCBSIS +
         valorIBSEstadual +
         valorIBSMunicipal +
         valorCBS +
         valorIS;
 
+
+
     // =====================================================
-    // 7. TOTAL DOS TRIBUTOS
+    // 9. TOTAL TRIBUTOS
     // =====================================================
+
     const totalTributos =
         valorICMSRecalculado +
         valorIPI +
@@ -2652,50 +2725,76 @@ function calcularImpostos(dados) {
         valorCBS +
         valorIS;
 
+
+
     return {
-        quantidade,
-        valorUnitario,
-        valorLiquido,
+
+quantidade,
+
+valorUnitario,
+ 
+valorLiquido,
+
         fator,
-        fatorIBSCBS,
-        divisorICMS,
+
         valorBruto,
+
+
         baseICMSOriginal,
         valorICMSOriginal,
+
+
         basePISCOFINS,
         valorPIS,
         valorCOFINS,
+
+
         valorIPI,
+
+
         totalNotaSemIBSCBSIS,
+
+
         baseIS,
         valorIS,
+
+
         baseIBSCBS,
+
         valorIBSEstadual,
         valorIBSMunicipal,
         valorCBS,
+
+
         baseICMSRecalculada,
         valorICMSRecalculado,
-        valorProdutosComICMS,
+
+
         totalNotaComIBSCBSIS,
+
+
         totalTributos,
-        valorIBSTotal: valorIBSEstadual + valorIBSMunicipal,
+
+
+        valorIBSTotal:
+            valorIBSEstadual +
+            valorIBSMunicipal,
+
+
         totalNovosTributos:
             valorIBSEstadual +
             valorIBSMunicipal +
             valorCBS +
             valorIS
+
     };
+
 }
     /* =========================================================
        VALIDAÇÃO
        ========================================================= */
 
     function validarDados(dados) {
-        if (dados.quantidade <= 0) {
-            alert("Informe uma quantidade maior que zero.");
-            document.getElementById("quantidade").focus();
-            return false;
-        }
 
         if (dados.valorLiquido <= 0) {
 
@@ -2811,7 +2910,6 @@ const totalImpostos = impostos.reduce(
     (total, item) => total + item.valor,
     0
 );
-``
 
 const graficoHTML = impostos
     .map(item => {
@@ -2821,13 +2919,19 @@ const graficoHTML = impostos
                 ? (item.valor / totalImpostos) * 100
                 : 0;
 
+        // Valores zerados não recebem barra colorida.
+        // Valores positivos muito pequenos mantêm largura visual mínima de 3%.
         const larguraBarra =
-            Math.max(percentualReal, 3);
+            item.valor > 0
+                ? Math.max(percentualReal, 3)
+                : 0;
 
         const percentualTexto =
-            percentualReal < 1
-                ? percentualReal.toFixed(1) + "%"
-                : percentualReal.toFixed(0) + "%";
+            percentualReal === 0
+                ? ""
+                : percentualReal < 1
+                    ? percentualReal.toFixed(1).replace(".", ",") + "%"
+                    : percentualReal.toFixed(0) + "%";
 
         return `
             <div class="tax-bar-row">
@@ -2851,7 +2955,6 @@ const graficoHTML = impostos
 
     })
     .join("");
-``
 
     return `
         <div class="result-content">
@@ -2868,21 +2971,30 @@ const graficoHTML = impostos
 
             <div class="result-section-title">
                 Composição do Valor da Nota
-            </div>
-            <div class="result-grid">
-                <div class="result-item">
-                    <div class="result-item-label">Quantidade</div>
-                    <div class="result-item-value">
-                        ${formatarNumero(resultado.quantidade)}
-                    </div>
-                </div>
-                <div class="result-item">
-                    <div class="result-item-label">Valor Unitário Líquido</div>
-                    <div class="result-item-value">
-                        ${formatarMoeda(resultado.valorUnitario)}
-                    </div>
-                </div>
 
+<div class="result-item">
+    <div class="result-item-label">
+        Quantidade
+    </div>
+
+    <div class="result-item-value">
+        ${formatarNumero(resultado.quantidade)}
+    </div>
+</div>
+
+<div class="result-item">
+    <div class="result-item-label">
+        Valor Unitário
+    </div>
+
+    <div class="result-item-value">
+        ${formatarMoeda(resultado.valorUnitario)}
+    </div>
+</div>
+
+            </div>
+
+            <div class="result-grid">
                 <div class="result-item">
                     <div class="result-item-label">
                         Valor Total Bruto dos Produtos
@@ -2926,22 +3038,6 @@ const graficoHTML = impostos
 
                     <div class="result-item-value">
                         ${formatarMoeda(resultado.valorIPI)}
-                    </div>
-                </div>
-                <div class="result-item">
-                    <div class="result-item-label">
-                        Base de Cálculo do ICMS (por dentro)
-                    </div>
-                    <div class="result-item-value">
-                        ${formatarMoeda(resultado.baseICMSRecalculada)}
-                    </div>
-                </div>
-                <div class="result-item">
-                    <div class="result-item-label">
-                        Valor dos Produtos com ICMS
-                    </div>
-                    <div class="result-item-value">
-                        ${formatarMoeda(resultado.valorProdutosComICMS)}
                     </div>
                 </div>
             </div>
@@ -3047,13 +3143,10 @@ const graficoHTML = impostos
             }
 
 
-            let resultado;
-            try {
-                resultado = calcularImpostos(dados);
-            } catch (erro) {
-                alert(erro.message);
-                return;
-            }
+            const resultado =
+                calcularImpostos(dados);
+
+
             resultadoConteudo.innerHTML =
                 gerarResultadoHTML(resultado);
 
