@@ -12,14 +12,66 @@
   <meta name="theme-color" content="#6366f1">
   <link rel="icon" href="icon.png">
 
+    <!-- =========================================================
+         METADADOS GERAIS, SEO E COMPARTILHAMENTO
+         ========================================================= -->
     <meta
         name="description"
-        content="Simulador NFe RT 2027 para cálculo de impostos na Reforma Tributária."
+        content="Simulador NFe RT 2027 para cálculo de impostos considerando a Reforma Tributária."
+    >
+    <meta name="author" content="Diego D'Angelo">
+    <link
+        rel="canonical"
+        href="https://odangdi.github.io/simulador-rt2026/"
     >
 
+    <!-- Open Graph: Facebook, LinkedIn, WhatsApp e outros -->
+    <meta property="og:type" content="website">
     <meta
-        name="author"
-        content="Diego D'angelo"
+        property="og:url"
+        content="https://odangdi.github.io/simulador-rt2026/"
+    >
+    <meta
+        property="og:title"
+        content="Simulador NFe - Reforma Tributária 2027"
+    >
+    <meta
+        property="og:description"
+        content="Simule o cálculo de impostos de uma NFe em operações de venda para industrialização, considerando os tributos previstos na Reforma Tributária a partir de 2027."
+    >
+    <meta
+        property="og:image"
+        content="https://raw.githubusercontent.com/odangdi/simulador-rt2026/main/Tela%20Simulador%20NFe.jpg"
+    >
+    <meta
+        property="og:image:secure_url"
+        content="https://raw.githubusercontent.com/odangdi/simulador-rt2026/main/Tela%20Simulador%20NFe.jpg"
+    >
+    <meta property="og:image:type" content="image/jpeg">
+    <meta
+        property="og:image:alt"
+        content="Tela do Simulador NFe RT 2027"
+    >
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Simulador NFe RT 2027">
+
+    <!-- X/Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta
+        name="twitter:title"
+        content="Simulador NFe - Reforma Tributária 2027"
+    >
+    <meta
+        name="twitter:description"
+        content="Simulador de impostos da NFe considerando a Reforma Tributária a partir de 2027."
+    >
+    <meta
+        name="twitter:image"
+        content="https://raw.githubusercontent.com/odangdi/simulador-rt2026/main/Tela%20Simulador%20NFe.jpg"
+    >
+    <meta
+        name="twitter:image:alt"
+        content="Tela do Simulador NFe RT 2027"
     >
 
     <title>Simulador NFe RT 2027 | Cálculo de impostos</title>
@@ -39,17 +91,6 @@
     <!-- =========================================================
          CSS
          ========================================================= -->
-
-
-<!-- META TAGS PARA COMPARTILHAMENTO SOCIAL -->
-
-<!-- Open Graph para Facebook, LinkedIn etc -->
-<meta name="type" property="og:type" content="website">
-<meta name="url" property="og:url" content="https://odangdi.github.io/simulador-rt2026/">
-<meta name="title" property="og:title" content="Simulador NFe - Reforma Tributária 2027">
-<meta name="description" property="og:description" content="Esta ferramenta simula o cálculo de impostos de uma NFe em operações de venda para industrialização, considerando os tributos previstos na Reforma Tributária a partir de 2027. Ideal para empresas optantes pelo Lucro Real, permite calcular ICMS, IPI, PIS, COFINS, IBS, CBS e IS com rapidez e precisão.">
-<meta name="image" property="og:image" content="https://raw.githubusercontent.com/odangdi/simulador-rt2026/main/Tela%20Simulador%20NFe.jpg">
-<meta name="author" content="[Diego D'angelo]">
 
 
 
@@ -1259,6 +1300,87 @@ body.dark-theme{
 
 
 
+    
+
+/* =====================================================
+   BOTAO DE COMPARTILHAMENTO
+   ===================================================== */
+.share-button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease, border-color .2s ease;
+}
+.share-button:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.38);
+}
+.share-button:active {
+    transform: translateY(1px);
+}
+.share-button:focus-visible {
+    outline: 3px solid rgba(45, 212, 191, 0.45);
+    outline-offset: 2px;
+}
+.share-button svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+}
+.share-feedback {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+    max-width: min(360px, calc(100% - 40px));
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #111827;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+.share-feedback.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+@media (max-width: 760px) {
+    .header-inner {
+        flex-wrap: wrap;
+    }
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .share-button {
+        flex: 1;
+    }
+}
+@media (max-width: 420px) {
+    .share-button {
+        width: 100%;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+}
+
     </style>
 </head>
 
@@ -1312,7 +1434,28 @@ body.dark-theme{
 
             </div>
 
-<div style="display:flex;align-items:center;gap:10px;">
+<div class="header-actions" style="display:flex;align-items:center;gap:10px;">
+    <button
+        id="sharePage"
+        class="share-button"
+        type="button"
+        title="Compartilhar esta página"
+        aria-label="Compartilhar esta página"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <span>Compartilhar esta página</span>
+    </button>
 
     <span class="badge">
         Lucro Real
@@ -2249,6 +2392,13 @@ O ICMS é calculado sobre a base original do produto acrescida* dos valores de I
 
 </div>
 
+
+<div
+    id="shareFeedback"
+    class="share-feedback"
+    role="status"
+    aria-live="polite"
+></div>
 
 <!-- =========================================================
      JAVASCRIPT
@@ -3327,6 +3477,77 @@ if(localStorage.getItem("tema") === "dark"){
 }
 
 
+
+
+/* =========================================================
+   COMPARTILHAMENTO DA PAGINA
+   ========================================================= */
+const sharePage = document.getElementById("sharePage");
+const shareFeedback = document.getElementById("shareFeedback");
+let shareFeedbackTimer;
+
+function mostrarAvisoCompartilhamento(mensagem) {
+    clearTimeout(shareFeedbackTimer);
+    shareFeedback.textContent = mensagem;
+    shareFeedback.classList.add("is-visible");
+
+    shareFeedbackTimer = setTimeout(function () {
+        shareFeedback.classList.remove("is-visible");
+    }, 3000);
+}
+
+async function copiarLinkDaPagina() {
+    const url = window.location.href;
+
+    if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+        return;
+    }
+
+    const campoTemporario = document.createElement("textarea");
+    campoTemporario.value = url;
+    campoTemporario.setAttribute("readonly", "");
+    campoTemporario.style.position = "fixed";
+    campoTemporario.style.opacity = "0";
+    document.body.appendChild(campoTemporario);
+    campoTemporario.select();
+
+    const copiado = document.execCommand("copy");
+    campoTemporario.remove();
+
+    if (!copiado) {
+        throw new Error("Nao foi possivel copiar o link.");
+    }
+}
+
+sharePage.addEventListener("click", async function () {
+    const dadosCompartilhamento = {
+        title: "Simulador NFe - Reforma Tributária 2027",
+        text: "Conheça o Simulador NFe RT 2027 para cálculo de impostos da Reforma Tributária.",
+        url: window.location.href
+    };
+
+    try {
+        if (navigator.share) {
+            await navigator.share(dadosCompartilhamento);
+            return;
+        }
+
+        await copiarLinkDaPagina();
+        mostrarAvisoCompartilhamento("Link copiado para a área de transferência.");
+    } catch (erro) {
+        if (erro && erro.name === "AbortError") {
+            return;
+        }
+
+        try {
+            await copiarLinkDaPagina();
+            mostrarAvisoCompartilhamento("Link copiado para a área de transferência.");
+        } catch (erroCopia) {
+            mostrarAvisoCompartilhamento("Não foi possível compartilhar. Copie o endereço do navegador.");
+        }
+    }
+});
 
 </script>
 
